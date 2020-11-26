@@ -39,6 +39,22 @@ first attempt as a shell script added too much lag when changing directories.
     ~> project_root package.json
     /Users/mat/src/some_js_project
 
+**Subproject**
+where both `some_clojure_project` and `sub_project` contain a `project.clj`
+
+    ~> pwd
+    /Users/mat/src/some_clojure_project/sub_project/src
+    ~> project_root --basename project.clj
+    sub_project
+
+**Parent Project of Subproject**
+where both `some_clojure_project` and `sub_project` contain a `project.clj`
+
+    ~> pwd
+    /Users/mat/src/some_clojure_project/sub_project/src
+    ~> project_root --basename --top-down project.clj
+    some_clojure_project
+
 etc.
 
 ### Options
@@ -49,6 +65,7 @@ etc.
     FLAGS:
         -b, --basename    Return only the basename of the root directory
         -h, --help        Prints help information
+        -t, --top-down    Search directories top down rather than bottom up
         -V, --version     Prints version information
         -v, --verbose     Verbose mode, multiples increase the verbosity
 

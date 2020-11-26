@@ -39,26 +39,45 @@ impl From<std::io::Error> for FindError<'_> {
     }
 }
 
-/// Starting in the current working directory, and then walking up through the
-/// parent directories, looks for the marker file and returns the first
-/// directory containing it.
+/// Looks for the marker file and returns the first directory containing it.
+/// If `top_down` is false, starts in the current working directory, walking up
+/// through the parent directories looking for the marker. If `top_down` is
+/// true the order is reversed.
 ///
 /// # Errors
 ///
 /// Returns an `Err` if current working directory value is invalid, or if the
 /// marker file is not found.
-pub fn find_root(marker: &str) -> Result<PathBuf, FindError> {
-    std::env::current_dir()?
-        .ancestors()
-        .inspect(|p| trace!("testing {:?}", p))
+pub fn find_root(marker: &str, top_down: bool) -> Result<PathBuf, FindError> {
+    let current_dir = std::env::current_dir()?;
+    let path = if top_down {
+        find_root_in(
+            marker,
+            current_dir
+                .ancestors()
+                .collect::<Vec<_>>()
+                .into_iter()
+                .rev(),
+        )
+    } else {
+        find_root_in(marker, current_dir.ancestors())
+    };
+    path.ok_or_else(|| FindError::NotFound(marker))
+}
+
+/// Returns the first directory in `iter` that contains a file named as the
+/// `marker`.
+fn find_root_in<'a, I>(marker: &str, iter: I) -> Option<PathBuf>
+where
+    I: Iterator<Item = &'a Path>,
+{
+    iter.inspect(|p| trace!("testing {:?}", p))
         .find(|p| p.join(marker).exists())
         .map(|p| {
             trace!("matched {:?}", p);
             p.to_owned()
         })
-        .ok_or_else(|| FindError::NotFound(marker))
 }
-
 /// An error that can be returned from [`prepare_output`].
 #[derive(Debug)]
 pub enum OutputError<'a> {

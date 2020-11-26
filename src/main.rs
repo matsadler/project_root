@@ -10,6 +10,9 @@ struct Opts {
     /// Verbose mode, multiples increase the verbosity
     #[structopt(short, long, parse(from_occurrences))]
     verbose: usize,
+    /// Search directories top down rather than bottom up
+    #[structopt(short, long)]
+    top_down: bool,
     /// Return only the basename of the root directory
     #[structopt(short, long)]
     basename: bool,
@@ -31,6 +34,6 @@ fn main() {
 
     debug!("{:#?}", opts);
 
-    let root = find_root(&opts.marker).exit(1);
+    let root = find_root(&opts.marker, opts.top_down).exit(1);
     println!("{}", prepare_output(&root, opts.basename).exit(1));
 }
