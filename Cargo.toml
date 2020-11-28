@@ -3,6 +3,7 @@ name = "project_root"
 version = "0.1.0"
 authors = ["Mat Sadler <mat@sourcetagsandcodes.com>"]
 edition = "2018"
+license = "MIT"
 
 [dependencies]
 log = "0.4"
