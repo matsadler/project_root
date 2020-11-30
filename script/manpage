@@ -1,0 +1,12 @@
+#!/bin/bash
+
+set -eoux pipefail
+
+target=""
+dir=$(cd "$(dirname $0)" && pwd)
+source "$dir"/env
+
+gem install --install-dir "$dir"/.gem --bindir "$dir"/.gem/bin ronn-ng
+
+export GEM_PATH="$dir"/.gem
+"$dir"/.gem/bin/ronn --roff "$bin_name".1.ronn

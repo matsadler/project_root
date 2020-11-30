@@ -1,0 +1,28 @@
+#!/bin/bash
+
+set -eoux pipefail
+
+target="${1:-}"
+
+dir=$(cd "$(dirname $0)" && pwd)
+source "$dir"/env
+
+bin="$target_dir"/release/"$bin_name"
+version=$("$bin" -V | sed "s/$bin_name //")
+
+if [ -n "$target" ]; then
+  slug="$bin_name"-"$version"-"$target"
+else
+  slug="$bin_name"-"$version"
+fi
+
+package_dir="$base_target_dir"/package/"$slug"
+
+mkdir -p "$package_dir"
+cp "$bin" "$package_dir"
+cp install.sh "$package_dir"
+cp "$bin_name".1 "$package_dir"
+cp LICENSE "$package_dir"
+pushd "$base_target_dir"/package
+tar -czf "$slug".tar.gz "$slug"
+popd

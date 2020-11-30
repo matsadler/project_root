@@ -1,0 +1,12 @@
+#!/bin/bash
+
+set -eoux pipefail
+
+toolchain=$1
+target=$2
+
+if [ "$target" = 'universal-apple-darwin' ]; then
+  target='x86_64-apple-darwin aarch64-apple-darwin'
+fi
+
+curl https://sh.rustup.rs -sSf | sh -s -- -y --profile minimal --default-toolchain "$toolchain" --target $target

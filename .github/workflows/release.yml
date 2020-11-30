@@ -1,0 +1,62 @@
+name: release
+on:
+  push:
+    tags:
+    - "[0-9]+.[0-9]+.[0-9]+"
+jobs:
+  build-release:
+    name: Build Release Artifacts
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      matrix:
+        os: [linux, macos]
+        include:
+        - os: linux
+          runner: ubuntu-18.04
+          toolchain: stable
+          target: x86_64-unknown-linux-musl
+        - os: macos
+          runner: macos-11.0
+          toolchain: beta
+          target: universal-apple-darwin
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v2
+
+    - name: Install Rust
+      run: script/install-rust ${{ matrix.toolchain }} ${{ matrix.target }}
+
+    - name: Build Release
+      run: script/build-release ${{ matrix.target }}
+
+    - name: Build Manual Page
+      run: script/manpage
+
+    - name: Build Package
+      run: script/package ${{ matrix.target }}
+
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: packages
+        path: target/package/*.tar.gz
+
+  create-release:
+    name: Create Release
+    needs: build-release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Download Artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: packages
+          path: target/package
+
+      - name: Create Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: script/github-release "${GITHUB_REF#refs/tags/}"

@@ -1,0 +1,11 @@
+bin_name=project_root
+
+project_root=$(cd "$dir"/.. && pwd)
+
+base_target_dir="${CARGO_TARGET_DIR:-$project_root/target}"
+
+if [ -n "$target" ]; then
+  target_dir="$base_target_dir"/"$target"
+else
+  target_dir="$base_target_dir"
+fi

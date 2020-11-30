@@ -1,0 +1,27 @@
+#!/bin/bash
+
+set -eoux pipefail
+
+target="${1:-}"
+
+dir=$(cd "$(dirname $0)" && pwd)
+source "$dir"/env
+
+if [ -z "$target" ] && [ "$(uname)" != 'Darwin' ]; then
+  cargo build --release
+elif [ -n "$target" ] && [ "$target" != 'universal-apple-darwin' ]; then
+  cargo build --target "$target" --release
+else
+  cargo build --target x86_64-apple-darwin --release
+  cargo build --target aarch64-apple-darwin --release
+
+  mkdir -p "$target_dir"/release
+
+  lipo -create \
+    "$base_target_dir"/x86_64-apple-darwin/release/"$bin_name" \
+    "$base_target_dir"/aarch64-apple-darwin/release/"$bin_name" \
+    -output "$target_dir"/release/"$bin_name"
+fi
+
+strip "$target_dir"/release/"$bin_name"
+

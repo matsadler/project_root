@@ -1,0 +1,11 @@
+#!/bin/bash
+
+set -eoux pipefail
+
+tag="$1"
+
+target=""
+dir=$(cd "$(dirname $0)" && pwd)
+source "$dir"/env
+
+gh release create $tag $(ls "$base_target_dir"/package/*.tar.gz)
