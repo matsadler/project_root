@@ -105,9 +105,12 @@ for example:
 
 ## Docs
 
-To see user documentation run:
+The man page is generated with [ronn].
 
-    project_root --help
+[ronn]: https://github.com/apjanke/ronn-ng
+
+    gem install ronn-ng
+    ronn --roff avvoenv.1.ronn
 
 Developer documentation can be built with:
 

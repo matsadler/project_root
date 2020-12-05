@@ -1,0 +1,92 @@
+project_root(1) -- find the current project's root directory
+============================================================
+
+## SYNOPSIS
+
+`project_root` [`-h`|`--help`] [`-V`|`--version`]
+
+`project_root` [`-b`|`--basename`]
+               [`-t`|`--top-down`]
+               [`-v`|`--verbose`]
+               <file>
+
+## DESCRIPTION
+
+**project_root** finds the root directory of a project from the current working
+directory, based upon a marker file.
+
+## OPTIONS
+
+  * `-b`, `--basename`:
+    Return only the basename of the root directory.
+
+  * `-h`, `--help`:
+    Prints help information.
+
+  * `-t`, `--top-down`:
+    Search directories top down rather than bottom up.
+
+  * `-V`, `--version`:
+    Prints version information.
+
+  * `-v`, `--verbose`:
+    Verbose mode, multiples increase the verbosity.
+
+
+## EXAMPLES
+
+A Rust project:
+
+    ~> pwd
+    /Users/mat/src/some_rust_project/src/some_module
+    ~> project_root Cargo.toml
+    /Users/mat/src/some_rust_project
+
+Get the name only:
+
+    ~> pwd
+    /Users/mat/src/some_rust_project/src/some_module
+    ~> project_root --basename Cargo.toml
+    some_rust_project
+
+A Ruby project:
+
+    ~> pwd
+    /Users/mat/src/some_rails_project/test/models
+    ~> project_root Gemfile
+    /Users/mat/src/some_rails_project
+
+A JavaScript project:
+
+    ~> pwd
+    /Users/mat/src/some_js_project/lib/some_module
+    ~> project_root package.json
+    /Users/mat/src/some_js_project
+
+A Subproject, where both `some_clojure_project` and `sub_project` contain a
+`project.clj`:
+
+    ~> pwd
+    /Users/mat/src/some_clojure_project/sub_project/src
+    ~> project_root --basename project.clj
+    sub_project
+
+A parent project of a subproject, where both `some_clojure_project` and
+`sub_project` contain a `project.clj`:
+
+    ~> pwd
+    /Users/mat/src/some_clojure_project/sub_project/src
+    ~> project_root --basename --top-down project.clj
+    some_clojure_project
+
+## DIAGNOSTICS
+
+Run project_root at maximum output verbosity with the `-vvvv` flag.
+
+## AUTHORS
+
+**project_root** is written and maintained by Mat Sadler
+
+## SEE ALSO
+
+pwd(1), basename(1)
